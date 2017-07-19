@@ -3,12 +3,11 @@ Shell script to replace all occurences of strings in files
 
 Quick shell script(s) to replace all occurences of provided patterns in field 1 of file `replace.tsv` with corresponding items in field 2.
 
-# Usage
-
 ## `sanitize_dir.sh`
 
 Replace all occurences of the specified pattern(s) in all files found in the specified directory.
 
+### Example
 Sample items to replace:
 
 ```bash
