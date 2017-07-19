@@ -5,6 +5,10 @@ Quick shell script(s) to replace all occurences of provided patterns in field 1 
 
 # Usage
 
+## `sanitize_dir.sh`
+
+Replace all occurences of the specified pattern(s) in all files found in the specified directory.
+
 Sample items to replace:
 
 ```bash
@@ -44,3 +48,7 @@ I ate the pancake. Goodbye.
 Sincerely,
 bar
 ```
+
+## `sanitize_names.sh`
+
+Replace all occurences of the specified patterns in file, directory, and symlink names in the specified directory
