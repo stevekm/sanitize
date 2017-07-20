@@ -4,7 +4,9 @@
 ## DESCRIPTION: This script will replace all occurences of items in column 1 with item in column 2 in names of files, dirs, or symlinks in the specified directory
 
 dir_to_clean="$1"
+params="${@:2}" # any extra params passed
 replace_file="replace.tsv"
+
 
 change_name () {
     local item="$1"
@@ -22,7 +24,7 @@ cat "$replace_file" | while read line; do
         find_pattern="$(echo "$line" | cut -f1)"
         replace_pattern="$(echo "$line" | cut -f2)"
         printf "%s, %s\n" "$find_pattern" "$replace_pattern"
-        find "$dir_to_clean" -name "*$find_pattern*" -print0 | while read -d $'\0' item; do
+        find "$dir_to_clean" ${params:=} -name "*$find_pattern*" -print0 | while read -d $'\0' item; do
             change_name "$item" "$find_pattern" "$replace_pattern"
         done
     fi
