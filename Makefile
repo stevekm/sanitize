@@ -14,7 +14,7 @@ check-file:
 	@if [ ! -f "$(FILE)" ]; then echo ">>> ERROR: Invalid file: $(FILE)"; exit 1; fi
 
 # clean a single file's contents
-sanitize-content: check-patterns-file check-file
+sanitize-file: check-patterns-file check-file
 	@patterns="$$(cat "$(PATTERNFILE)" | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')" ; \
 	perl -pi -e "$${patterns}" "$(FILE)"
 
