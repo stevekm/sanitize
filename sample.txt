@@ -1,6 +1,0 @@
-Hello this is foo. I have a 
-waffle. It is chocolate flavored. 
-I ate the waffle. Goodbye. 
-Sincerely, 
-foo
-
