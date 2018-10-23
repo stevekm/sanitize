@@ -1,4 +1,4 @@
-# run with 'make -j4'
+# use `make` -j argument to run in parallel for many files; `make sanitize-all-filenames DIR=somedir -j 4`
 SHELL:=/bin/bash
 PATTERNFILE:=patterns.tsv
 DIR:=
@@ -6,7 +6,8 @@ FILE:=
 
 none:
 
-# 
+# ~~~~~~~ VALIDATIONS ~~~~~~ #
+# make sure dir exists
 check-dir:
 	@if [ ! -d "$(DIR)" ]; then echo ">>> ERROR: Not a directory: $(DIR); was 'DIR' passed correctly?"; exit 1; fi
 
@@ -19,6 +20,9 @@ check-patterns-file:
 	@$(MAKE) check-file FILE="$(PATTERNFILE)"
 	@if [ "$$(cat "$(PATTERNFILE)" | wc -l)" -lt "1" ]; then echo "ERROR: Not enough lines in patterns file $(PATTERNFILE)";  exit 1; fi
 
+
+
+# ~~~~~~~ FILE CONTENTS ~~~~~~ #
 # clean a single file's contents
 sanitize-file-contents: check-patterns-file check-file
 	@echo ">>> Sanitizing contents of file: $(FILE)"
@@ -46,6 +50,7 @@ $(ALLFILES):
 
 
 
+# ~~~~~~~ FILE NAMES ~~~~~~ #
 # remove known patterns from file names
 sanitize-filename: check-patterns-file check-file
 	@cat $(PATTERNFILE) | while read line; do \
