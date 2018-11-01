@@ -118,6 +118,12 @@ Sample3,Sample3,...
 NTC-H2O,NTC-H2O,...
 ```
 
+# Notes
+
+Use at your own risk, I cannot guarantee that a glitch in the 'sanitize' code won't nuke your files. Known issues:
+
+- Windows carriage returns (`\r\n`, shown as `^M` in the terminal, often introduced by Excel) can cause errors and wiped files if included in the `patterns.tsv` file. You can check your line endings in the terminal with `cat -ve patterns.tsv`. I've updated the Makefile to try and fix this error before running.
+
 # Software
 
 - GNU `make`
