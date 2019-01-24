@@ -52,6 +52,17 @@ $(ALLFILES):
 .PHONY: $(ALLFILES)
 
 
+# an alternative very slow method... on Mac requires -i '' syntax or something... also watch the sed delimiters..
+SED_DELIM:=|
+sanitize-file-contents-debug:
+	awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | while read line; do \
+	if [ ! -z "$${line}" ]; then \
+	old="$$(echo "$${line}" | cut -f1)" ; \
+	new="$$(echo "$${line}" | cut -f2)" ; \
+	echo "$${old} -> $${new}" ; \
+	sed -i "$(FILE)" -e "s$(SED_DELIM)$${old}$(SED_DELIM)$${new}$(SED_DELIM)g" ; \
+	fi ; \
+	done
 
 # ~~~~~~~ FILE NAMES ~~~~~~ #
 # remove known patterns from file names
