@@ -66,10 +66,6 @@ sanitize-file-contents-debug:
 
 # need to sort old patterns from longest to shortest
 PATTERNS_STR:=$(shell awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')
-patterns:
-	@echo s_C_0UWU6R_P001_d | perl -p -e "$(PATTERNS_STR)"
-	# @patterns_str="$(awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')" ; \
-	# echo $$patterns_str
 
 # ~~~~~~~ FILE NAMES ~~~~~~ #
 # remove known patterns from file names
