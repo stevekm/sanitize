@@ -1,6 +1,9 @@
 # use `make` -j argument to run in parallel for many files; `make sanitize-all-filenames DIR=somedir -j 4`
 SHELL:=/bin/bash
 PATTERNFILE:=patterns.tsv
+# create a Perl expression to replace old patterns with new ones
+# need to sort old patterns from longest to shortest first
+PATTERNS_STR:=$(shell awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')
 DIR:=
 FILE:=
 
@@ -53,19 +56,16 @@ $(ALLFILES):
 
 
 # an alternative very slow method... on Mac requires -i '' syntax or something... also watch the sed delimiters..
-SED_DELIM:=|
-sanitize-file-contents-debug:
-	awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | while read line; do \
-	if [ ! -z "$${line}" ]; then \
-	old="$$(echo "$${line}" | cut -f1)" ; \
-	new="$$(echo "$${line}" | cut -f2)" ; \
-	echo "$${old} -> $${new}" ; \
-	sed -i "$(FILE)" -e "s$(SED_DELIM)$${old}$(SED_DELIM)$${new}$(SED_DELIM)g" ; \
-	fi ; \
-	done
-
-# need to sort old patterns from longest to shortest
-PATTERNS_STR:=$(shell awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')
+# SED_DELIM:=|
+# sanitize-file-contents-debug:
+# 	awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | while read line; do \
+# 	if [ ! -z "$${line}" ]; then \
+# 	old="$$(echo "$${line}" | cut -f1)" ; \
+# 	new="$$(echo "$${line}" | cut -f2)" ; \
+# 	echo "$${old} -> $${new}" ; \
+# 	sed -i "$(FILE)" -e "s$(SED_DELIM)$${old}$(SED_DELIM)$${new}$(SED_DELIM)g" ; \
+# 	fi ; \
+# 	done
 
 # ~~~~~~~ FILE NAMES ~~~~~~ #
 # remove known patterns from file names
