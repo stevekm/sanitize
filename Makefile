@@ -1,5 +1,6 @@
 # use `make` -j argument to run in parallel for many files; `make sanitize-all-filenames DIR=somedir -j 4`
 SHELL:=/bin/bash
+.ONESHELL:
 PATTERNFILE:=patterns.tsv
 # create a Perl expression to replace old patterns with new ones
 # need to sort old patterns from longest to shortest first
@@ -30,6 +31,7 @@ clean-patterns:
 
 # ~~~~~~~ FILE CONTENTS ~~~~~~ #
 # clean a single file's contents
+# TODO: should this use the PATTERNS_STR instead?
 sanitize-file-contents: check-patterns-file clean-patterns check-file
 	@echo ">>> Sanitizing contents of file: $(FILE)"
 	@patterns_str="$$(cat "$(PATTERNFILE)" | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')" ; \
@@ -87,3 +89,17 @@ sanitize-all-filenames-recurse: $(ALLFILENAMES)
 $(ALLFILENAMES):
 	@$(MAKE) sanitize-filename FILE="$@"
 .PHONY: $(ALLFILENAMES)
+
+
+# ~~~~~ BAM FILE READ GROUPS ~~~~~ #
+
+# https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-
+# https://github.com/broadinstitute/picard/releases/tag/2.23.7
+# https://github.com/broadinstitute/picard/releases/download/2.23.7/picard.jar
+
+# samtools/1.9
+INFILE:=
+OUTFILE:=
+sanitize-bam:
+	@echo ">>> Sanitizing contents of file: $(INFILE), saving to: $(OUTFILE)"
+	samtools view -h "$(INFILE)" | perl -p -e '$(PATTERNS_STR)' | samtools view -S -b - > $(OUTFILE)
