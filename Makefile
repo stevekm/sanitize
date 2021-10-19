@@ -74,7 +74,7 @@ $(ALLFILES):
 sanitize-filename: check-patterns-file clean-patterns check-file
 	@oldname="$$(basename "$(FILE)")" ; \
 	newname="$$(dirname  "$(FILE)")/$$(echo $$oldname | perl -p -e '$(PATTERNS_STR)' )" ; \
-	/bin/mv -v "$(FILE)" "$${newname}"
+	/bin/mv -v "$(FILE)" "$${newname}" || echo ">>> could not rename $${oldname} to $${newname}"
 
 FINDALLFILENAMES:=
 ALLFILENAMES:=
