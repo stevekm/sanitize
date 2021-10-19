@@ -2,9 +2,14 @@
 SHELL:=/bin/bash
 .ONESHELL:
 PATTERNFILE:=patterns.tsv
+
 # create a Perl expression to replace old patterns with new ones
 # need to sort old patterns from longest to shortest first
-PATTERNS_STR:=$(shell awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')
+# convert the contents of each tab-delimited line into a final output string that looks like:
+# s|Foo1|Sample1|g; s|Foo2|Sample2|g;
+# NOTE: watch out for the presence of the pattern delimiters for sed/Perl as part of the pattern strings
+# NOTE: use pipes in the final Perl pattern so that we can scrub filepaths as well
+PATTERNS_STR:=$(shell awk 'BEGIN{ FS=IFS="\t" } { print length($$1) " " $$0; }' "$(PATTERNFILE)" | sort -k 1nr | cut -d ' ' -f 2- | sed -e '/^$$/d' -e 's/[[:space:]]/|/g' -e 's/^/s|/g' -e 's/$$/|g;/g' | tr '\n' ' ')
 DIR:=
 FILE:=
 
@@ -29,13 +34,17 @@ clean-patterns:
 	@perl -pi -e 's|\r\n$$|\n|g' "$(PATTERNFILE)"
 	@perl -pi -e 's|^[[:space:]]*$$||g' "$(PATTERNFILE)"
 
+check-pattern-str:
+	echo "${PATTERNS_STR}"
 # ~~~~~~~ FILE CONTENTS ~~~~~~ #
 # clean a single file's contents
-# TODO: should this use the PATTERNS_STR instead?
 sanitize-file-contents: check-patterns-file clean-patterns check-file
-	@echo ">>> Sanitizing contents of file: $(FILE)"
-	@patterns_str="$$(cat "$(PATTERNFILE)" | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')" ; \
-	perl -pi -e "$${patterns_str}" "$(FILE)"
+	echo ">>> Sanitizing contents of file: $(FILE)"
+	perl -pi -e "${PATTERNS_STR}" "$(FILE)"
+
+# TODO: should this use the PATTERNS_STR instead?
+# @patterns_str="$$(cat "$(PATTERNFILE)" | sed -e '/^$$/d' -e 's|[[:space:]]|/|g' -e 's|^|s/|g' -e 's|$$|/g;|g' | tr '\n' ' ')" ;
+
 
 # clean the contents of all files in a directory
 FINDALLFILES:=
