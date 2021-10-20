@@ -107,7 +107,7 @@ $(ALLFILENAMES):
 # https://github.com/broadinstitute/picard/releases/download/2.23.7/picard.jar
 
 # parallel -k -N0 -n 0 -j 4 "echo your command here ; sleep 2" ::: {1..10}
-# find bam/ -type f -name "*.bam" | parallel 'make sanitize-bam INFILE={} OUTFILE=new_bam/$(basename {})'
+# find bam/ -type f -name "*.bam" | parallel -j 8 'make sanitize-bam INFILE={} OUTFILE=new_bam/$(basename {})'
 
 # samtools/1.9
 INFILE:=
