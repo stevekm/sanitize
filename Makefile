@@ -101,15 +101,17 @@ $(ALLFILENAMES):
 
 
 # ~~~~~ BAM FILE READ GROUPS ~~~~~ #
-
+# Use this to scrub sample ID's from the bam file read groups, because some GATK tools require the ID's to match and output them in the mutation files, etc.
 # https://gatk.broadinstitute.org/hc/en-us/articles/360037226472-AddOrReplaceReadGroups-Picard-
 # https://github.com/broadinstitute/picard/releases/tag/2.23.7
 # https://github.com/broadinstitute/picard/releases/download/2.23.7/picard.jar
 
+# NOTE: watch out for patterns that accidentally match .bam record contents!
+
 # parallel -k -N0 -n 0 -j 4 "echo your command here ; sleep 2" ::: {1..10}
 # find bam/ -type f -name "*.bam" | parallel -j 8 'make sanitize-bam INFILE={} OUTFILE=new_bam/$(basename {})'
 
-# samtools/1.9
+# module load samtools/1.9
 INFILE:=
 OUTFILE:=
 sanitize-bam:
